@@ -1,6 +1,8 @@
 
 using Bookstore_Backend_C_.Data;
+using Bookstore_Backend_C_.Helpers;
 using Bookstore_Backend_C_.Models;
+using Bookstore_Backend_C_.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +44,7 @@ namespace Bookstore_Backend_C_
             {
                 opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
+            builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -54,6 +57,12 @@ namespace Bookstore_Backend_C_
                 });
             });
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                _ = DatabaseSeeder.SeedBooks(services);
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
