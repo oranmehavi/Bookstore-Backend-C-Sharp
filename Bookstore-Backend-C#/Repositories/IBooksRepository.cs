@@ -8,5 +8,6 @@ namespace Bookstore_Backend_C_.Repositories
         Task<BookModel> GetBookByIdAsync(string id);
         Task<BookModel> AddNewBookAsync(NewBookModel newBookModel);
         Task<BookModel> UpdateBookAsync(string id, NewBookModel newBookModel);
+        Task<int> DeleteByIdAsync(string id);
     }
 }

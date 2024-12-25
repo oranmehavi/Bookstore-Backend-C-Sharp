@@ -56,5 +56,16 @@ namespace Bookstore_Backend_C_.Repositories
             await _context.SaveChangesAsync();
             return book;
         }
+
+        public async Task<int> DeleteByIdAsync(string id)
+        {
+            var book = await _context.Books.FindAsync(new Guid(id));
+            if (book != null)
+            {
+                _context.Books.Remove(book);
+                return await _context.SaveChangesAsync();
+            }
+            return -1;
+        }
     }
 }

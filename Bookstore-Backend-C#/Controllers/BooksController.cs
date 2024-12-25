@@ -39,7 +39,7 @@ namespace Bookstore_Backend_C_.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddBookAsync([FromBody] NewBookModel newBookModel)
+        public async Task<IActionResult> AddBook([FromBody] NewBookModel newBookModel)
         {
             var book = await _booksRepository.AddNewBookAsync(newBookModel);
             if (book == null)
@@ -50,7 +50,7 @@ namespace Bookstore_Backend_C_.Controllers
         }
 
         [HttpPatch("{bookId}")]
-        public async Task<IActionResult> UpdateBookAsync([FromRoute] string bookId, [FromBody] NewBookModel newBookModel)
+        public async Task<IActionResult> UpdateBook([FromRoute] string bookId, [FromBody] NewBookModel newBookModel)
         {
             var book = await _booksRepository.UpdateBookAsync(bookId, newBookModel);
             if (book == null)
@@ -58,6 +58,17 @@ namespace Bookstore_Backend_C_.Controllers
                 return BadRequest();
             }
             return Ok(book);
+        }
+
+        [HttpDelete("{bookId}")]
+        public async Task<IActionResult> DeleteBook([FromRoute] string bookId)
+        {
+            var result = await _booksRepository.DeleteByIdAsync(bookId);
+            if (result == -1)
+            {
+                return BadRequest();
+            }
+            return Ok();
         }
     }
 }
