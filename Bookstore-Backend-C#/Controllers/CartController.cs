@@ -1,7 +1,6 @@
 ﻿using Bookstore_Backend_C_.Models;
 using Bookstore_Backend_C_.Repositories;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -26,7 +25,18 @@ namespace Bookstore_Backend_C_.Controllers
             {
                 return BadRequest();
             }
-            return Ok(result);
+            return Ok(new { Data = result});
+        }
+
+        [HttpGet, Authorize]
+        public async Task<IActionResult> GetAllBooksFromCart()
+        {
+            var books = await _cartRepository.GetBooksFromCart(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (books == null)
+            {
+                return NotFound();
+            }
+            return Ok(new { Data = new { BooksData =  books } });   
         }
 
         [HttpPatch("{index}"), Authorize]
@@ -37,7 +47,7 @@ namespace Bookstore_Backend_C_.Controllers
             {
                 return BadRequest();
             }
-            return Ok(user);
+            return Ok(new { Data = new { UpdatedUser = user } });
         }
 
         [HttpDelete("{index}"), Authorize]
@@ -48,18 +58,18 @@ namespace Bookstore_Backend_C_.Controllers
             {
                 return BadRequest();
             }
-            return Ok(user);
+            return Ok(new { Data = new { UpdatedUser = user } });
         }
 
         [HttpDelete, Authorize]
         public async Task<IActionResult> ClearCart()
         {
             var user = await _cartRepository.ClearCartAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (user == null) 
+            if (user == null)
             {
                 return BadRequest();
             }
-            return Ok(user);
+            return Ok(new { Data = new { UpdatedUser = user } });
         }
     }
 }

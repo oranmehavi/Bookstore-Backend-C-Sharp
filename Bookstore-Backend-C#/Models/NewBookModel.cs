@@ -11,7 +11,7 @@ namespace Bookstore_Backend_C_.Models
         [Required]
         public string Summary { get; set; }
         [Required]
-        public string Image {  get; set; }
+        public string Image { get; set; }
         [Required]
         [Range(1, double.MaxValue, ErrorMessage = "Price must be at least 1.")]
         public double Price { get; set; }

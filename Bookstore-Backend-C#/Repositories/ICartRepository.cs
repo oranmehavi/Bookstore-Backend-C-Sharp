@@ -8,5 +8,6 @@ namespace Bookstore_Backend_C_.Repositories
         Task<GetUserDTO> ChangeItemQuantityAsync(string userId, int newQuantity, int index);
         Task<GetUserDTO> RemoveFromCartAsync(string userId, int index);
         Task<GetUserDTO> ClearCartAsync(string userId);
+        Task<List<BookModel>> GetBooksFromCart(string userId);
     }
 }

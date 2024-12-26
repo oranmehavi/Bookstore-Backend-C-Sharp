@@ -15,10 +15,24 @@ namespace Bookstore_Backend_C_.Repositories
             _mapper = mapper;
         }
 
-        public async Task<List<BookModel>> GetAllBooksAsync()
+        public async Task<GetReturnedBooksDTO> GetBooksAsync(string searchValue, int? page)
         {
-            var books = await _context.Books.ToListAsync();
-            return books;
+            int offset = ((page??1) - 1) * 9;
+
+            var booksQuery = _context.Books.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchValue))
+            {
+                booksQuery = booksQuery.Where(b => b.BookName.Contains(searchValue));
+            }
+
+            var totalBooksInSearch = await booksQuery.CountAsync();
+            var books = await booksQuery
+                .Skip(page == null && string.IsNullOrWhiteSpace(searchValue) ? 0 : offset)
+                .Take(9 /*page == null && string.IsNullOrWhiteSpace(searchValue) ? 0 : 9*/)
+                .ToListAsync();
+
+            return new GetReturnedBooksDTO { Books = books, Length = totalBooksInSearch};
         }
 
         public async Task<BookModel> GetBookByIdAsync(string id)

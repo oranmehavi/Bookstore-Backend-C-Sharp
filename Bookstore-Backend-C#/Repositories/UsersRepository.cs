@@ -26,7 +26,7 @@ namespace Bookstore_Backend_C_.Repositories
             _configuration = configuration;
         }
 
-        public async Task<IdentityResult> Signup(SignupModel signupModel)
+        public async Task<GetUserWithTokenDTO> Signup(SignupModel signupModel)
         {
             UserModel user = new()
             {
@@ -36,10 +36,16 @@ namespace Bookstore_Backend_C_.Repositories
             };
 
             var result = await _userManager.CreateAsync(user, signupModel.Password);
-            return result;
+            if (!result.Succeeded)
+            {
+                return null;
+            }
+            string token = NewToken(signupModel.Email, user.Id);
+
+            return new GetUserWithTokenDTO { User = _mapper.Map<GetUserDTO>(user), Token = token };
         }
 
-        public async Task<string> Login(LoginModel loginModel)
+        public async Task<GetUserWithTokenDTO> Login(LoginModel loginModel)
         {
             var user = await _userManager.FindByEmailAsync(loginModel.Email);
 
@@ -55,13 +61,13 @@ namespace Bookstore_Backend_C_.Repositories
             }
 
             string token = NewToken(loginModel.Email, user.Id);
-            return token;
+            return new GetUserWithTokenDTO { User = _mapper.Map<GetUserDTO>(user), Token = token };
         }
 
         public async Task<GetUserDTO> GetUserByTokenAsync(string id)
         {
             var user = await _context.Users.Include(u => u.Cart).ThenInclude(c => c.Book).Where(u => u.Id == id).FirstOrDefaultAsync();
-            
+
             if (user == null)
             {
                 return null;
@@ -89,8 +95,20 @@ namespace Bookstore_Backend_C_.Repositories
             await _context.SaveChangesAsync();
             return _mapper.Map<GetUserDTO>(user);
         }
-
         
+        public async Task<bool> DeleteUserAsync(string id)
+        {
+            var user = await _context.Users.Include(u => u.Cart).ThenInclude(c => c.Book).Where(u => u.Id == id).FirstOrDefaultAsync();
+            if (user == null)
+                return false;
+
+            _context.RemoveRange(user.Cart);
+            user.Cart.Clear();
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+                return false;
+            return true;
+        }
 
         private string NewToken(string email, string id)
         {

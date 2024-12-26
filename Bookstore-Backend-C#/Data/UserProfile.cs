@@ -5,7 +5,7 @@ namespace Bookstore_Backend_C_.Data
 {
     public class UserProfile : Profile
     {
-        public UserProfile() 
+        public UserProfile()
         {
             CreateMap<UserModel, GetUserDTO>();
         }

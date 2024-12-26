@@ -5,7 +5,7 @@ namespace Bookstore_Backend_C_.Data
 {
     public class BookProfile : Profile
     {
-        public BookProfile() 
+        public BookProfile()
         {
             CreateMap<NewBookModel, BookModel>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()));

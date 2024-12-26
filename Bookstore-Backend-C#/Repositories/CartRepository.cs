@@ -58,7 +58,7 @@ namespace Bookstore_Backend_C_.Repositories
         public async Task<GetUserDTO> RemoveFromCartAsync(string userId, int index)
         {
             var user = await _context.Users.Include(u => u.Cart).ThenInclude(c => c.Book).Where(u => u.Id == userId).FirstOrDefaultAsync();
-            
+
             if (user.Cart.Count == 0 || index >= user.Cart.Count)
             {
                 return null;
@@ -78,6 +78,18 @@ namespace Bookstore_Backend_C_.Repositories
             user.Cart.Clear();
             await _context.SaveChangesAsync();
             return _mapper.Map<GetUserDTO>(user);
+        }
+
+        public async Task<List<BookModel>> GetBooksFromCart(string userId)
+        {
+            var books = await _context.Users
+                .Where(u => u.Id == userId)
+                .Include(u => u.Cart)
+                .ThenInclude(c => c.Book)
+                .SelectMany(u => u.Cart)
+                .Select(c => c.Book)
+                .ToListAsync();
+            return books;
         }
     }
 }

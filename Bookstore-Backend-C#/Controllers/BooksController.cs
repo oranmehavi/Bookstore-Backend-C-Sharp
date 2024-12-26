@@ -1,6 +1,5 @@
 ﻿using Bookstore_Backend_C_.Models;
 using Bookstore_Backend_C_.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bookstore_Backend_C_.Controllers
@@ -17,14 +16,14 @@ namespace Bookstore_Backend_C_.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllBooks()
+        public async Task<IActionResult> GetAllBooks([FromQuery] string? search, [FromQuery] int? page)
         {
-            var books = await _booksRepository.GetAllBooksAsync();
-            if (books.Count == 0)
+            var books = await _booksRepository.GetBooksAsync(search, page);
+            if (books == null)
             {
                 return NotFound();
             }
-            return Ok(books);
+            return Ok(new { Data = books });
         }
 
         [HttpGet("{bookId}")]
@@ -35,7 +34,7 @@ namespace Bookstore_Backend_C_.Controllers
             {
                 return NotFound();
             }
-            return Ok(book);
+            return Ok(new { Data = new { Book = book } });
         }
 
         [HttpPost]
@@ -46,7 +45,7 @@ namespace Bookstore_Backend_C_.Controllers
             {
                 return BadRequest();
             }
-            return Ok(book);
+            return Ok(new { Data = new { Book = book } });
         }
 
         [HttpPatch("{bookId}")]
@@ -57,7 +56,7 @@ namespace Bookstore_Backend_C_.Controllers
             {
                 return BadRequest();
             }
-            return Ok(book);
+            return Ok(new { Data = new { Book = book } });
         }
 
         [HttpDelete("{bookId}")]

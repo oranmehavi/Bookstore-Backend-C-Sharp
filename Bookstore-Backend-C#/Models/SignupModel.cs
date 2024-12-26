@@ -12,7 +12,6 @@ namespace Bookstore_Backend_C_.Models
         public string Email { get; set; }
         [Required, Compare("ConfirmPassword")]
         public string Password { get; set; }
-        [Required]
-        public string ConfirmPassword { get; set; }
+        public string? ConfirmPassword { get; set; }
     }
 }
